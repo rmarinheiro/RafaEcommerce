@@ -1,5 +1,6 @@
 package br.com.rafaecommerce.resource;
 
+import br.com.rafaecommerce.dto.CategoryDTO;
 import br.com.rafaecommerce.entities.Category;
 import br.com.rafaecommerce.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class CategoryResource {
     @Autowired
     private CategoryService categoryService;
     @GetMapping
-    public ResponseEntity<List<Category>> findAll() {
-        List<Category>list = categoryService.findAll();
+    public ResponseEntity<List<CategoryDTO>> findAll() {
+        List<CategoryDTO> list = categoryService.findAll();
         return ResponseEntity.ok().body(list);
     }
 }
