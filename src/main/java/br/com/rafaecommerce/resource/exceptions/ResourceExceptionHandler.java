@@ -1,6 +1,6 @@
 package br.com.rafaecommerce.resource.exceptions;
 
-import br.com.rafaecommerce.services.exceptions.EntityNotFoundException;
+import br.com.rafaecommerce.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +11,8 @@ import java.time.Instant;
 
 @ControllerAdvice
 public class ResourceExceptionHandler {
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<StandardError> entityotFound(EntityNotFoundException e, HttpServletRequest request) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<StandardError> entityotFound(ResourceNotFoundException e, HttpServletRequest request) {
         StandardError error = new StandardError();
         error.setTimestamp(Instant.now());
         error.setStatus(HttpStatus.NOT_FOUND.value());
