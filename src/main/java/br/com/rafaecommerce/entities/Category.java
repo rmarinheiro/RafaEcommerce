@@ -6,7 +6,7 @@ import java.time.Instant;
 import java.util.Objects;
 
 @Entity
-@Table(name = "tbl_category")
+@Table(name = "tb_category")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
