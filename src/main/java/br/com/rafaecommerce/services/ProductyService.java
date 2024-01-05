@@ -1,7 +1,10 @@
 package br.com.rafaecommerce.services;
 
+import br.com.rafaecommerce.dto.CategoryDTO;
 import br.com.rafaecommerce.dto.ProductDTO;
+import br.com.rafaecommerce.entities.Category;
 import br.com.rafaecommerce.entities.Producty;
+import br.com.rafaecommerce.repositories.CategoryRepository;
 import br.com.rafaecommerce.repositories.ProductyRepository;
 import br.com.rafaecommerce.services.exceptions.DataBaseException;
 import br.com.rafaecommerce.services.exceptions.ResourceNotFoundException;
@@ -22,6 +25,9 @@ public class ProductyService {
     @Autowired
     private ProductyRepository productyRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAllPaged(PageRequest pageRequest) {
         Page<Producty> list = productyRepository.findAll(pageRequest);
@@ -32,22 +38,25 @@ public class ProductyService {
     public ProductDTO findById(Long id) {
         Optional<Producty> obj = productyRepository.findById(id);
         Producty entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity Not Found"));
-        ProductDTO dto = new ProductDTO(entity,entity.getCategories());
+        ProductDTO dto = new ProductDTO(entity, entity.getCategories());
         return dto;
     }
 
     @Transactional
     public ProductDTO insert(ProductDTO dto) {
         Producty entity = new Producty();
+        copyDTOToEntity(dto, entity);
         entity.setName(dto.getName());
         entity = productyRepository.save(entity);
         return new ProductDTO(entity);
     }
 
+
     @Transactional
     public ProductDTO update(ProductDTO dto, Long id) {
         try {
             Producty entity = productyRepository.getReferenceById(id);
+            copyDTOToEntity(dto, entity);
             entity.setName(dto.getName());
             entity = productyRepository.save(entity);
             return new ProductDTO(entity);
@@ -65,6 +74,19 @@ public class ProductyService {
             productyRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
             throw new DataBaseException("Falha de integridade referencial");
+        }
+    }
+    private void copyDTOToEntity(ProductDTO dto, Producty entity) {
+        entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
+        entity.setPrice(dto.getPrice());
+        entity.setImgUrl(dto.getImgUrl());
+        entity.setDate(dto.getDate());
+
+        entity.getCategories().clear();
+        for (CategoryDTO catDTO : dto.getCategories()){
+            Category category = categoryRepository.getReferenceById(catDTO.getId());
+            entity.getCategories().add(category);
         }
     }
 }
