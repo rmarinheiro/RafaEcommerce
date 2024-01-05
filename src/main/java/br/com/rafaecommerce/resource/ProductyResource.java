@@ -4,8 +4,7 @@ import br.com.rafaecommerce.dto.ProductDTO;
 import br.com.rafaecommerce.services.ProductyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,15 +17,10 @@ public class ProductyResource {
 
     @Autowired
     private ProductyService ProductyService;
+
     @GetMapping
-    public ResponseEntity<Page<ProductDTO>> findAll(
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "linesPerPage", defaultValue = "12") Integer linesPerPage,
-            @RequestParam(value = "orderBy", defaultValue = "name") String orderBy,
-            @RequestParam(value = "direction", defaultValue = "ASC") String direction
-    ) {
-        PageRequest pageRequest = PageRequest.of(page,linesPerPage, Sort.Direction.valueOf(direction),orderBy);
-        Page<ProductDTO> list = ProductyService.findAllPaged(pageRequest);
+    public ResponseEntity<Page<ProductDTO>> findAll(Pageable pageable) {
+        Page<ProductDTO> list = ProductyService.findAllPaged(pageable);
         return ResponseEntity.ok().body(list);
     }
 
@@ -45,9 +39,10 @@ public class ProductyResource {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<ProductDTO> update(@PathVariable Long id, @RequestBody ProductDTO dto) {
-        dto = ProductyService.update(dto,id);
+        dto = ProductyService.update(dto, id);
         return ResponseEntity.ok().body(dto);
     }
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         ProductyService.delete(id);
